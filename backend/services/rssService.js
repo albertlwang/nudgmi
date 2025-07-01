@@ -9,7 +9,9 @@ async function fetchRSSItems(url = process.env.RSS_FEED_URL) {
      // Create rss parser
     const parser = new RSSParser({
         customFields: {
-            item: ['media:group', 'media:description'], // [parentKey, nestedKey]
+            item: [
+                ['media:group', 'media:description'], // [parentKey, nestedKey]
+            ],
         },
     });
 
@@ -18,7 +20,22 @@ async function fetchRSSItems(url = process.env.RSS_FEED_URL) {
 
     // Map custom field to standard 'description' field
     for (const item of feed.items) {
-        item.description = item['media:description'] || 'none';
+        try {
+            const raw = item['media:description'];
+
+            if (
+                raw &&
+                typeof raw === 'object' &&
+                'media:description' in raw &&
+                Array.isArray(raw['media:description'])
+            ) {
+                item.description = raw['media:description'][0];
+            } else {
+                item.description = 'none';
+            }
+        } catch (e) {
+            item.description = 'none';
+        }
     }
     
     // Return or log the items from the feed

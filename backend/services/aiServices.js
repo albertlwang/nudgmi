@@ -7,7 +7,7 @@ const openai = new OpenAI({
 });
 
 async function classifyPost(post, topic) {
-    console.log(`Description: ${post['media:description']}`);
+    // console.log(`Description: ${post.description}`);
     const prompt = `
         You are a relevance classifier.
 
@@ -29,7 +29,8 @@ async function classifyPost(post, topic) {
             { role: "user", content: prompt }
         ],
     });
-    console.log(`[aiServices] Prompt: ${prompt}`)
+    
+    //console.log(`[aiServices] Prompt: ${prompt}`)
 
 
     // Extract yes/no and return

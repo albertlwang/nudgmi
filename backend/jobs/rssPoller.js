@@ -20,11 +20,12 @@ cron.schedule('* * * * *', async () => { // Runs this code [1] minute
         for (const item of feed_items) { // Check if its link exists in posts table
             // If exists, skip (do nothing)
             if (await postExists(item.link)) {
+                console.log(`[rssPoller] Skipped seen post: ${item.title}`);
                 continue;
             }
 
             // Check if post is relevant (OpenAI filtering)
-            const topic = "new song release";
+            const topic = "Trump";
             const isRelevant = await classifyPost(item, topic);
             if (!isRelevant) { // Skip irrelevant posts
                 console.log(`[rssPoller] Skipped irrelevant post: ${item.title}`);
