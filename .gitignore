@@ -1,0 +1,8 @@
+# Node.js dependencies
+node_modules/
+
+# Environment Variables
+node_modules/.env
+backend/.env
+
+.DS_Store
