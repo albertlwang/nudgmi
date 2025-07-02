@@ -6,15 +6,15 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function classifyPost(post, topic) {
-    // console.log(`Description: ${post.description}`);
+async function classifyPost(item, topic) {
+    // console.log(`Description: ${item.description}`);
     const prompt = `
         You are a relevance classifier.
 
         Given a post and a user-defined topic, determine whether the post is clearly related to that topic.
 
-        Post title: ${post.title}
-        Post description: ${post.description}
+        Post title: ${item.title}
+        Post description: ${item.description}
         
         Is this post relevant to the topic: "${topic}"?
         Answer only "yes" or "no".
