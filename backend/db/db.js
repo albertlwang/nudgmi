@@ -6,7 +6,7 @@ const supabase = require('../supabaseClient');
 
 // Define helper function that checks if incoming post already exists in (seen by) post table
 async function postExists(link) {
-    const { data, error } = await supabase
+    const { data: existingPost, error } = await supabase
         .from('posts')
         .select('id')
         .eq('link', link)
@@ -18,7 +18,7 @@ async function postExists(link) {
         throw error;
     }
 
-    return !!data;
+    return existingPost;
 }
 
 // Define helper function that fetches all subscriptions. Use to loop over all subscribed sources.
@@ -77,10 +77,68 @@ async function saveUserPost(item, subscription, summary) {
     }
 }
 
+// Create or find a user by email
+async function getOrCreateUser(email) {
+    const { data: existingUser, error: fetchError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error('[db.js -> getOrCreateUser] Fetch error:', fetchError.message);
+        throw fetchError;
+    }
+
+    if (existingUser) {
+        return { id: existingUser.id, created: false };
+    }
+
+    const { data: newUser, error: insertError } = await supabase
+        .from('users')
+        .insert([{ email }])
+        .select('id')
+        .single();
+    
+    if (insertError) {
+        console.error('[db -> getOrCreateUser] Insert error:', insertError.message);
+        throw insertError;
+    }
+
+    return { id: newUser.id, created: true };
+}
+
+// Given a user_id, return their own feed.
+// Support pagination and filtering
+async function getUserFeed(user_id, { source = null, topic = null, after = null, limit = 20 } = {}) {
+    let query = supabase
+        .from('user_posts')
+        .select('*')
+        .eq('user_id', user_id)
+        .order('published_at', { ascending: false})
+        .limit(limit);
+
+    // Apply relevant filters to query
+    if (source) query = query.eq('source', source);
+    if (topic) query = query.eq('topic', topic);
+    if (after) query = query.gte('published_at', after);
+
+    const { data, error } = await query;
+
+    if (error) {
+        console.error('[db -> getUserFeed] Error:', error.message);
+        throw error;
+    }
+
+    return data;
+}
+
 // Export async helper functions to expose
 module.exports = {
     postExists, 
     savePost,
     getAllSubscriptions,
     saveUserPost,
+    getOrCreateUser,
+    getUserFeed,
 };

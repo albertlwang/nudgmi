@@ -3,6 +3,7 @@
 // Import Express (from node dependencies)
 const express = require('express');
 const app = express();
+
 // Add middleware (for parsing incoming JSON -- APIs) app.use(express.json());
 app.use(express.json());
 
@@ -14,4 +15,12 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
     res.send('OK');
 });
+
+// Import and mount routes
+const authRoutes = require('./routes/auth');
+const feedRoutes = require('./routes/feed');
+
+app.use('/api', authRoutes); // /api/register
+app.use('/api', feedRoutes); // /api/feed
+
 module.exports = app;
