@@ -7,7 +7,7 @@ const cron = require('node-cron');
 // Import your function from rssService.js
 const { fetchRSSItems } = require('../services/rssService');
 const { postExists, getAllSubscriptions, savePost, saveUserPost } = require('../db/db');
-const { classifyPost } = require('../services/aiServices');
+const { classifyPost, summarizePost } = require('../services/aiServices');
 
 cron.schedule('* * * * *', async () => { // Runs this code [1] minute
     try {
@@ -52,7 +52,8 @@ cron.schedule('* * * * *', async () => { // Runs this code [1] minute
                     }
 
                     // Otherwise, insert relevant and new post into user_posts table
-                    await saveUserPost(item, sub);
+                    const summary = await summarizePost(item);      // Get AI-generated summary
+                    await saveUserPost(item, sub, summary);
 
                     console.log(`[rssPoller] Relevant post saved for user ${sub.user_id}: ${item.title}`);
                 }

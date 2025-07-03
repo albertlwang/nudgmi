@@ -56,7 +56,7 @@ async function savePost(item, source) {
 }
 
 // Define helper function that inserts new entry into user_posts table
-async function saveUserPost(item, subscription) {
+async function saveUserPost(item, subscription, summary) {
     const { error } = await supabase
         .from('user_posts')
         .insert([
@@ -66,7 +66,7 @@ async function saveUserPost(item, subscription) {
                 link: item.link,
                 title: item.title || '',
                 source: item.source || subscription.source,
-                summary: null,      // TO DO
+                summary: summary,
                 published_at: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
             }
         ]);

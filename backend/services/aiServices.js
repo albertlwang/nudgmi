@@ -7,7 +7,6 @@ const openai = new OpenAI({
 });
 
 async function classifyPost(item, topic) {
-    // console.log(`Description: ${item.description}`);
     const prompt = `
         You are a relevance classifier.
 
@@ -29,15 +28,38 @@ async function classifyPost(item, topic) {
             { role: "user", content: prompt }
         ],
     });
-    
-    //console.log(`[aiServices] Prompt: ${prompt}`)
-
 
     // Extract yes/no and return
-    console.log(`[aiServices] Response: ${response.choices[0].message.content}`)
+    // console.log(`[aiServices] Response: ${response.choices[0].message.content}`)
     const answer = response.choices[0].message.content.trim().toLowerCase();
     return answer.startsWith("yes");
 }
 
+async function summarizePost(item) {
+    const prompt = `
+        Write a concise summary (1-2 sentences) of the following post for a user notification or dashboard:
+
+        Title: ${item.title}
+        Description: ${item.description || "None"}
+
+        Focus on what's new, important, or interesting. Omit any extra tokens (e.g. hashtags).
+        `;
+
+    const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        temperature: 0.5,
+        messages: [
+            { role: "system", content: "You are a helpful assistant that summarizes RSS/Youtube posts for users." },
+            { role: "user", content: prompt }
+        ],
+    });
+
+    const summary = response.choices[0].message.content.trim();
+    return summary;
+}
+
 // Export helper function to be used elsewhere
-module.exports = { classifyPost };
+module.exports = { 
+    classifyPost,
+    summarizePost,
+};
