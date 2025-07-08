@@ -19,8 +19,10 @@ app.get('/health', (req, res) => {
 // Import and mount routes
 const authRoutes = require('./routes/auth');
 const feedRoutes = require('./routes/feed');
+const subscriptionsRoutes = require('./routes/subscriptions');
 
 app.use('/api', authRoutes); // /api/register
 app.use('/api', feedRoutes); // /api/feed
+app.use('/api', subscriptionsRoutes); // /api/subscriptions
 
 module.exports = app;

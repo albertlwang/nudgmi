@@ -4,6 +4,8 @@
 // Initialize client
 const supabase = require('../supabaseClient');
 
+// CRON JOB FUNCTIONS ////////////////////////////////////////////////////////////////////////////////
+
 // Define helper function that checks if incoming post already exists in (seen by) post table
 async function postExists(link) {
     const { data: existingPost, error } = await supabase
@@ -77,6 +79,8 @@ async function saveUserPost(item, subscription, summary) {
     }
 }
 
+// API ROUTE FUNCTIONS ////////////////////////////////////////////////////////////////////////////////
+
 // Create or find a user by email
 async function getOrCreateUser(email) {
     const { data: existingUser, error: fetchError } = await supabase
@@ -133,6 +137,51 @@ async function getUserFeed(user_id, { source = null, topic = null, after = null,
     return data;
 }
 
+// Given a user, fetch all their subscriptions
+async function getUserSubs(user_id) {
+    const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', user_id);
+    
+    if (error) {
+        console.error('[db -> getUserSubs] Error:', error.message);
+        throw error;
+    }
+
+    return data;
+}
+
+// Create a subscription entry given a user, source, and topic
+// Returns the new subscription entry
+async function createUserSub(user_id, source, topic) {
+    const { data, error } = await supabase
+        .from('subscriptions')
+        .insert([{ user_id, source, topic }])
+        .select('*')
+        .single();
+    
+    if (error) {
+        console.error('[db -> createUserSub Error:', error.message);
+        throw error;
+    }
+
+    return data;
+}
+
+// Delete a subscription given its ID
+async function deleteSub(subscription_id) {
+    const { error } = await supabase
+        .from('subscriptions')
+        .delete()
+        .eq('id', subscription_id);
+
+    if (error) {
+        console.error('[db -> deleteSub] Error:', error.message);
+        throw error;
+    }
+}
+
 // Export async helper functions to expose
 module.exports = {
     postExists, 
@@ -141,4 +190,7 @@ module.exports = {
     saveUserPost,
     getOrCreateUser,
     getUserFeed,
+    getUserSubs,
+    createUserSub,
+    deleteSub,
 };
