@@ -9,6 +9,9 @@ const { fetchRSSItems } = require('../services/rssService');
 const { postExists, getAllSubscriptions, savePost, saveUserPost } = require('../db/db');
 const { classifyPost, summarizePost } = require('../services/aiServices');
 
+// In memory cache of most recent post link per source
+const latestSeenLinks = {};
+
 cron.schedule('* * * * *', async () => { // Runs this code [1] minute
     try {
         // Fetch all subscriptions
@@ -31,7 +34,13 @@ cron.schedule('* * * * *', async () => { // Runs this code [1] minute
 
             // For each RSS item in this source, update posts table
             for (const item of feed_items) { // Check if its link exists in post table
-                // If exists, skip (do nothing)
+                // Check in-memory cache for matches -> anything after match must already be seen
+                if (latestSeenLinks[source] && item.link === latestSeenLinks[source]) {
+                    console.log(`[rssPoller] Reached last seen post for ${source}, stopping early.`);
+                    break;
+                }
+                
+                // Fully check database: if exists, skip (do nothing)
                 if (await postExists(item.link)) {
                     //console.log(`[rssPoller] Skipped seen post: ${item.title}`);
                     continue;
@@ -58,50 +67,15 @@ cron.schedule('* * * * *', async () => { // Runs this code [1] minute
                     console.log(`[rssPoller] Relevant post saved for user ${sub.user_id}: ${item.title}`);
                 }
             }
+
+            // Update the cache with the newest post (first in the list)
+            if (feed_items.length > 0) {
+                latestSeenLinks[source] = feed_items[0].link;
+                console.log(`[rssPoller] Cached latest post for ${source}: ${latestSeenLinks[source]}`);
+            }
         }
         console.log(`[rssPoller] Job completed at ${new Date().toISOString()}`);
     } catch (err) {
         console.error('[rssPoller] Job failed: ', err.message);
     }
 });
-
-
-
-
-
-
-//     try {
-//         const source = process.env.RSS_FEED_URL;
-//         const feed_items = await fetchRSSItems(source);
-
-//         let newPostCount = 0;
-
-//         // For each RSS item
-//         for (const item of feed_items) { // Check if its link exists in posts table
-//             // If exists, skip (do nothing)
-//             if (await postExists(item.link)) {
-//                 console.log(`[rssPoller] Skipped seen post: ${item.title}`);
-//                 continue;
-//             }
-
-//             // Check if post is relevant (OpenAI filtering)
-//             const topic = "Trump";
-//             const isRelevant = await classifyPost(item, topic);
-//             if (!isRelevant) { // Skip irrelevant posts
-//                 console.log(`[rssPoller] Skipped irrelevant post: ${item.title}`);
-//                 continue;
-//             }
-
-//             // Otherwise, it doesn't exists AND is relevant and we process new post
-//             await savePost(item, source); // Insert into table
-
-//             // TODO: Process, filter, etc.
-//             console.log(`[rssPoller] New post saved: ${item.title}`);
-//             newPostCount++;
-//         }
-
-//         // Optionally log that the job ran, and how many items it found
-//         console.log(`[rssPoller] Job ran. Fetched ${feed_items.length} (${newPostCount} new items)`);
-//     } catch (err) {
-//         console.log('[rssPoller] Job failed: ', err.message);
-//     }  
