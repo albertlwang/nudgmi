@@ -61,7 +61,7 @@ function App() {
       {loading ? (
         <p>Loading posts...</p>
       ) : (
-        <ul>
+        <ul style={{paddingInlineStart: '0px'}}>
           {posts.map(post => (
             <PostCard
               key={post.link}
