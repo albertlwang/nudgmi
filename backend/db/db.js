@@ -116,7 +116,7 @@ async function getOrCreateUser(email) {
 // Support pagination and filtering
 async function getUserFeed(user_id, { source = null, topic = null, after = null, limit = 20 } = {}) {
     let query = supabase
-        .from('user_posts')
+        .from('user_feed_deduped')
         .select('*')
         .eq('user_id', user_id)
         .order('published_at', { ascending: false})

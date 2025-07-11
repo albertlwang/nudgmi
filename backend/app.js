@@ -5,6 +5,8 @@ const express = require('express');
 const app = express();
 
 // Add middleware (for parsing incoming JSON -- APIs) app.use(express.json());
+const cors = require('cors');
+app.use(cors());  
 app.use(express.json());
 
 app.get('/', (req, res) => {
