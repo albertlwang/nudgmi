@@ -1,7 +1,8 @@
 // src/App.jsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { formatDistanceToNow } from 'date-fns';
+
+import PostCard from './PostCard';
 
 
 function App() {
@@ -53,7 +54,7 @@ function App() {
   }, [userId]);
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+    <div style={{ padding: '0.5rem', fontFamily: 'sans-serif' }}>
       <h1>Nudgmi Proto Dashboard</h1>
       <p>Logged in as: <strong>{email}</strong></p>
 
@@ -62,16 +63,14 @@ function App() {
       ) : (
         <ul>
           {posts.map(post => (
-            <li key={post.id} style={{ marginBottom: '1.5rem' }}>
-              <h3>{post.title}</h3>
-              <p>{post.summary}</p>
-              <small>
-                <strong>Link:</strong>{' '}
-                <a href={post.link} target="_blank" rel="noopener noreferrer">{post.link}</a>
-                {' '}| <strong>Topic(s):</strong> {post.topics.join(', ')}
-                {' '}| <strong>Posted:</strong> {formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
-              </small>
-            </li>
+            <PostCard
+              key={post.link}
+              title={post.title}
+              summary={post.summary}
+              link={post.link}
+              published_at={post.published_at}
+              topics={post.topics}
+            />
           ))}
         </ul>
       )}
