@@ -12,3 +12,9 @@
     font-weight: medium;
     color: #363636;
 }
+
+.card {
+    background-color: white;
+    border-radius: 0.875rem;
+    box-shadow: 1px 4px 36px -9px rgba(0, 0, 0, 0.1);
+}

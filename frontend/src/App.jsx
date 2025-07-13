@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import PostCard from './PostCard';
+import InputBox from './InputBox';
 import './App.css';
 
 
@@ -54,28 +55,61 @@ function App() {
     // return () => clearInterval(interval); // Cleanup on unmount
   }, [userId]);
 
-  return (
-    <div style={{ padding: '0.5rem', fontFamily: 'inter', backgroundColor: '#F7F7F7' }}>
-      <h1 className='header'>Nudgmi Proto Dashboard</h1>
-      <p>Logged in as: <strong>{email}</strong></p>
 
-      {loading ? (
-        <p>Loading posts...</p>
-      ) : (
-        <ul style={{paddingInlineStart: '0px'}}>
-          {posts.map(post => (
-            <PostCard
-              key={post.link}
-              title={post.title}
-              summary={post.summary}
-              link={post.link}
-              published_at={post.published_at}
-              topics={post.topics}
-              icon_url={post.icon_url}
-            />
-          ))}
-        </ul>
-      )}
+
+  const handleSubmit = async (source, topic) => {
+    try {
+      console.log(`Request:
+                      user_id: ${userId} \n
+                      source: ${source} \n
+                      topic: ${topic}`);
+      const res = await axios.post('http://localhost:3000/api/subscribe', { user_id: userId, source, topic });
+      console.log('Subscription created:', response.data.subscription);
+      // refresh subscriptions
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.error) {
+        throw new Error(err.response.data.error); // e.g. "Duplicate subscription"
+      } else {
+        throw new Error('Submission failed'); // fallback
+      }
+    }
+  };
+
+  const validateInput = (input1, input2) => {
+    if (input1.trim() === '' || input2.trim() === '') return 'Input cannot be empty';
+    if (input1.length < 3 || input2.length < 3) return 'Input must be at least 3 characters';
+    return null; // valid
+  };
+
+  return (
+    <div style={{ padding: '0.5rem', fontFamily: 'inter', backgroundColor: '#F7F7F7', display: 'flex', flexDirection: 'row' }}>
+      <div style={{ width: '70%' }}>
+        <h1 className='header'>Nudgmi Proto Dashboard</h1>
+        <p>Logged in as: <strong>{email}</strong></p>
+
+        {loading ? (<p>Loading posts...</p>) : (
+          <ul style={{paddingInlineStart: '0px'}}>
+            {posts.map(post => (
+              <PostCard
+                key={post.link}
+                title={post.title}
+                summary={post.summary}
+                link={post.link}
+                published_at={post.published_at}
+                topics={post.topics}
+                icon_url={post.icon_url}
+              />
+            ))}
+          </ul>
+        )}
+      </div>
+      <div style={{ width: '30%' }}>
+        <div className='card' style={{ width: '90%', padding: '1rem'}}>
+          <h3 className='header'>Subscriptions</h3>
+          <InputBox onSubmit={handleSubmit} validate={validateInput}></InputBox>
+        </div>
+
+      </div>
     </div>
   );
 }

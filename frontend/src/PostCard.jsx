@@ -3,15 +3,13 @@ import { formatDistanceToNow } from 'date-fns';
 
 function PostCard({ title, summary, link, published_at, topics, icon_url }) {
     return (
-        <div 
+        <div
+            className='card'
             style={{
                 display: 'flex',
                 flexDirection: 'row',
                 marginBottom: '2rem',
-                maxWidth: '60%',
-                boxShadow: '1px 4px 36px -9px rgba(0, 0, 0, 0.1)',
-                borderRadius: '12px',
-                backgroundColor: 'white'
+                maxWidth: '95%'
             }}
         >
             <img
