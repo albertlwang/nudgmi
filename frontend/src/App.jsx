@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import PostCard from './PostCard';
+import './App.css';
 
 
 function App() {
@@ -54,8 +55,8 @@ function App() {
   }, [userId]);
 
   return (
-    <div style={{ padding: '0.5rem', fontFamily: 'sans-serif' }}>
-      <h1>Nudgmi Proto Dashboard</h1>
+    <div style={{ padding: '0.5rem', fontFamily: 'inter', backgroundColor: '#F7F7F7' }}>
+      <h1 className='header'>Nudgmi Proto Dashboard</h1>
       <p>Logged in as: <strong>{email}</strong></p>
 
       {loading ? (
@@ -70,6 +71,7 @@ function App() {
               link={post.link}
               published_at={post.published_at}
               topics={post.topics}
+              icon_url={post.icon_url}
             />
           ))}
         </ul>

@@ -1,0 +1,14 @@
+/* Global Styling */
+
+.profile-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #C8C8C8;
+}
+
+.header {
+    font-weight: medium;
+    color: #363636;
+}
