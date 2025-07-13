@@ -43,5 +43,12 @@ async function fetchRSSItems(url = process.env.RSS_FEED_URL) {
     return feed.items;
 }
 
+async function fetchRSSAuthor(url) {
+    const parser = new RSSParser();
+
+    const feed = await parser.parseURL(url);
+    return feed.title;
+}
+
 // Export the async function so it can be used elsewhere
-module.exports = { fetchRSSItems };
+module.exports = { fetchRSSItems, fetchRSSAuthor };

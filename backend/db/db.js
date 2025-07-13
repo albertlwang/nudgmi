@@ -4,6 +4,7 @@
 // Initialize client
 const supabase = require('../supabaseClient');
 const { fetchIcon } = require('../services/youtube');
+const { fetchRSSAuthor } = require('../services/rssService');
 const axios = require('axios');
 const mime = require('mime-types');
 
@@ -250,10 +251,13 @@ async function createUserSub(user_id, source, topic) {
             throw error;
         }
     }
+
+    // Parse author from rss feed link
+    const author = await fetchRSSAuthor(source);
     
     const { data, error } = await supabase
         .from('subscriptions')
-        .insert([{ user_id, source, topic }])
+        .insert([{ user_id, source, topic, author }])
         .select('*')
         .single();
     

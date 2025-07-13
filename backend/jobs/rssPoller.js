@@ -36,6 +36,7 @@ cron.schedule('* * * * *', async () => { // Runs this code [1] minute
             for (const item of feed_items) { // Check if its link exists in post table
                 // Check in-memory cache for matches -> anything after match must already be seen
                 if (latestSeenLinks[source] && item.link === latestSeenLinks[source]) {
+                    console.log(`Item: ${item.author}`);
                     console.log(`[rssPoller] Reached last seen post for ${source}, stopping early.`);
                     break;
                 }
