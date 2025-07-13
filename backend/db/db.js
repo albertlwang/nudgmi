@@ -4,6 +4,8 @@
 // Initialize client
 const supabase = require('../supabaseClient');
 const { fetchIcon } = require('../services/youtube');
+const axios = require('axios');
+const mime = require('mime-types');
 
 // CRON JOB FUNCTIONS ////////////////////////////////////////////////////////////////////////////////
 
@@ -188,7 +190,7 @@ async function getOrCreateUser(email) {
 
 // Given a user_id, return their own feed.
 // Support pagination and filtering
-async function getUserFeed(user_id, { source = null, topic = null, after = null, limit = 20 } = {}) {
+async function getUserFeed(user_id, { source = null, topic = null, after = null, limit = 50 } = {}) {
     let query = supabase
         .from('user_posts')
         .select('*')
@@ -227,17 +229,19 @@ async function getUserSubs(user_id) {
 }
 
 // Create a subscription entry given a user, source, and topic
+// Create new source entry on new source (cache icon in profile-icons bucket)
 // Returns the new subscription entry
 async function createUserSub(user_id, source, topic) {
     // First check if source exists in sources table. If not, fetch icon_url and insert
     if (!await sourceExists(source)) {
         const iconURL = await fetchIcon(source);
+        const publicURL = await cacheImage(source, iconURL);
         const { error } = await supabase
             .from('sources')
             .insert([
                 {
                     source: source,
-                    icon_url: iconURL,
+                    icon_url: publicURL,
                 }
             ]);
         
@@ -259,6 +263,46 @@ async function createUserSub(user_id, source, topic) {
     }
 
     return data;
+}
+
+// Helper for createUserSub: Cache profile icon images in profile-icon bucket
+async function cacheImage(source, icon_url) {
+    // Extract channel_id from source link -> better filepath naming
+    const url = new URL(source);
+    const channel_id = url.searchParams.get("channel_id");
+
+    try {
+        const res = await axios.get(icon_url, { responseType: 'arraybuffer' });
+
+        const extension = mime.extension(res.headers['content-type']) || 'jpg';
+        const filename = `profile-icons/${channel_id}.${extension}`;
+        const buffer = Buffer.from(res.data);
+
+        // Upload image to supabase 'profile-icons' bucket
+        const { error: uploadError } = await supabase.storage
+            .from('profile-icons')
+            .upload(filename, buffer, {
+                contentType: res.headers['content-type'],
+                upsert: true,
+            });
+
+        if (uploadError) {
+            console.error('[db -> cacheImage] Error:', uploadError.message);
+            throw uploadError;
+        }
+
+        // Retreive the public URL for the stored image
+        const { data: publicUrlData } = supabase.storage
+            .from('profile-icons')
+            .getPublicUrl(filename);
+
+        console.log(`[db -> cacheImage] Successfully cached icon for source: ${source}.`)
+
+        return publicUrlData.publicUrl;
+    } catch (err) {
+        console.error(`[db -> cacheImage] Failed to cache icon for ${source}:`, err.message);
+        throw err;
+    }
 }
 
 // Delete a subscription given its ID

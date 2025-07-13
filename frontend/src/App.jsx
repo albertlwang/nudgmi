@@ -64,7 +64,7 @@ function App() {
                       source: ${source} \n
                       topic: ${topic}`);
       const res = await axios.post('http://localhost:3000/api/subscribe', { user_id: userId, source, topic });
-      console.log('Subscription created:', response.data.subscription);
+      console.log('Subscription created:', res.data.subscription);
       // refresh subscriptions
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {

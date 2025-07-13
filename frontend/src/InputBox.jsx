@@ -6,15 +6,24 @@ function InputBox({ onSubmit, validate }) {
     const [status, setStatus] = useState(null);     // 'success' || 'error' || 'null'
     const [message, setMessage] = useState('');     // message displayed after submitting
 
-    const handleClick = () => {
+    const handleClick = async () => {
+        setMessage('');
         const error = validate?.(value1, value2);            // if validate is provided, run it on value
         if (error) {
             setStatus('error');
             setMessage(error);
         } else {
-            onSubmit(value1, value2);                        // run provided function on value
-            setStatus('success');
-            setMessage('Success.');
+            try {
+                await onSubmit(value1, value2);
+                setStatus('success');
+                setMessage('Success.');
+
+                setValue1('');
+                setValue2('');
+            } catch (err) {
+                setStatus('error');
+                setMessage(err.message || 'Submission failed.');
+            }
         }
     };
 
