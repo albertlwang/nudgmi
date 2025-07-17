@@ -30,15 +30,8 @@ function App() {
     fetchUserId();
   }, [email]);
 
-  // Fetch posts and subs once we have userId
-  useEffect(() => {
-    if (!userId) {
-      console.error('userID not stored');
-      return;
-    }
-
-    async function fetchPosts() {
-      try {
+  const fetchPosts = async () => {
+    try {
         const res = await axios.get('http://localhost:3000/api/feed', {
           params: { user_id: userId }
         });
@@ -47,10 +40,10 @@ function App() {
       } catch (err) {
         console.error('Error fetching posts:', err);
       }
-    }
+  };
 
-    async function fetchSubs() {
-      try {
+  const fetchSubs = async () => {
+    try {
         const res = await axios.get('http://localhost:3000/api/subscriptions', {
           params: { user_id: userId }
         });
@@ -60,12 +53,13 @@ function App() {
 
         const groupedSubs = Object.values(
           rawSubs.reduce((acc, sub) => {
-            const {source, topic, author } = sub;
+            const {source, topic, author, id } = sub;
 
             if(!acc[source]) {
-              acc[source] = { source, topics: [topic], author };
+              acc[source] = { source, topics: [topic], author, ids: [id] };
             } else {
               acc[source].topics.push(topic);
+              acc[source].ids.push(id);
             }
 
             return acc;
@@ -77,10 +71,21 @@ function App() {
       } catch (err) {
         console.error('Error fetching subscriptions:', err);
       }
+  }
+
+  // Fetch posts and subs once we have userId
+  useEffect( () => {
+    if (!userId) {
+      console.error('userID not stored');
+      return;
     }
 
-    fetchPosts();
-    fetchSubs();
+    const run = async () => {
+      await fetchPosts();
+      await fetchSubs();
+    }
+
+    run();
 
     // Optional: Poll every 10 seconds to check for new posts
     // const interval = setInterval(fetchPosts, 10000);
@@ -97,7 +102,7 @@ function App() {
                       topic: ${topic}`);
       const res = await axios.post('http://localhost:3000/api/subscribe', { user_id: userId, source, topic });
       console.log('Subscription created:', res.data.subscription);
-      // refresh subscriptions
+      await fetchSubs();
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
         throw new Error(err.response.data.error); // e.g. "Duplicate subscription"
@@ -113,6 +118,19 @@ function App() {
     return null; // valid
   };
 
+  const deleteSubs = async (subscription_ids) => {
+    try {
+      for (const id of subscription_ids) {
+        await axios.delete(`http://localhost:3000/api/subscriptions/${id}`);
+        console.log(`Deleted subscription ${id}`);
+      }
+      await fetchSubs();
+    } catch (err) {
+      console.error(`Error deleting subscriptions ${subscription_ids}:`, err.message);
+      throw err; // rethrow if you want the caller to handle it
+    }
+  };
+
   return (
     <div style={{ padding: '0.5rem', fontFamily: 'inter', backgroundColor: '#F7F7F7', display: 'flex', flexDirection: 'row' }}>
       <div style={{ width: '70%' }}>
@@ -122,15 +140,16 @@ function App() {
         {loading ? (<p>Loading posts...</p>) : (
           <ul style={{ paddingInlineStart: '0px' }}>
             {posts.map(post => (
-              <PostCard
-                key={post.link}
-                title={post.title}
-                summary={post.summary}
-                link={post.link}
-                published_at={post.published_at}
-                topics={post.topics}
-                icon_url={post.icon_url}
-              />
+              <li key={post.link} style={{ listStyle: 'none' }}>
+                <PostCard
+                  title={post.title}
+                  summary={post.summary}
+                  link={post.link}
+                  published_at={post.published_at}
+                  topics={post.topics}
+                  icon_url={post.icon_url}
+                />
+              </li>
             ))}
           </ul>
         )}
@@ -141,11 +160,12 @@ function App() {
           <InputBox onSubmit={handleSubmit} validate={validateInput}></InputBox>
           <ul style={{ paddingInlineStart: '0px' }}>
             {subs.map(sub => (
-              <SourceTag
-                key={sub.source}
-                source={sub.source}
-                author={sub.author}
-              />
+              <li key={sub.source} style={{ listStyle: 'none' }}>
+                  <SourceTag
+                    subscription={sub}
+                    onDelete={deleteSubs}
+                  />
+                </li>
             ))}
           </ul>
         </div>
