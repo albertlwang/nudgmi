@@ -13,6 +13,7 @@ function App() {
   const [userId, setUserId] = useState(null);
   const [posts, setPosts] = useState([]);
   const [subs, setSubs] = useState([]);
+  const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch user ID once on load
@@ -73,6 +74,18 @@ function App() {
       }
   }
 
+  const fetchSources = async () => {
+    try {
+      const res = await axios.get('http://localhost:3000/api/sources', {
+        params: { user_id: userId }
+      });
+
+      setSources(res.data.sources);
+    } catch (err) {
+      console.error('Error fetching sources:', err);
+    }
+  }
+
   // Fetch posts and subs once we have userId
   useEffect( () => {
     if (!userId) {
@@ -83,6 +96,7 @@ function App() {
     const run = async () => {
       await fetchPosts();
       await fetchSubs();
+      await fetchSources();
     }
 
     run();
@@ -159,10 +173,10 @@ function App() {
           <h3 className='header'>Subscriptions</h3>
           <InputBox onSubmit={handleSubmit} validate={validateInput}></InputBox>
           <ul style={{ paddingInlineStart: '0px' }}>
-            {subs.map(sub => (
-              <li key={sub.source} style={{ listStyle: 'none' }}>
+            {sources.map(source => (
+              <li key={source.source} style={{ listStyle: 'none' }}>
                   <SourceTag
-                    subscription={sub}
+                    source={source}
                     onDelete={deleteSubs}
                   />
                 </li>

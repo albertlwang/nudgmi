@@ -5,9 +5,14 @@ const axios = require('axios');
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 
 // Helper function to extract channel_id from RSS feed link
-function extractChannelId(rssUrl) {
-    const match = rssUrl.match(/channel_id=([\w-]+)/);
+function extractChannelId(source) {
+    const match = source.match(/channel_id=([\w-]+)/);
     return match ? match[1] : null;
+}
+
+function getChannelUri(source) {
+    const channelUri = extractChannelId(source);
+    return channelUri ? `https://www.youtube.com/channel/${ channelUri }` : null;
 }
 
 // Function to fetch profile icon for a Youtube channel based on RSS feed url (source)
@@ -45,4 +50,4 @@ async function fetchIcon(source) {
     }
 }
 
-module.exports = { fetchIcon };
+module.exports = { fetchIcon, getChannelUri };

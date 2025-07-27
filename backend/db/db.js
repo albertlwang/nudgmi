@@ -309,6 +309,22 @@ async function cacheImage(source, icon_url) {
     }
 }
 
+// Fetch the icon_url of a source
+async function fetchIconUrl(source) {
+    const { data, error } = await supabase
+        .from('sources')
+        .select('icon_url')
+        .eq('source', source)
+        .single();
+    
+    if (error) {
+        console.error('[db -> fetchIconUrl] Error:', error.message);
+        throw error;
+    }
+
+    return data.icon_url;
+}
+
 // Delete a subscription given its ID
 async function deleteSub(subscription_id) {
     const { error } = await supabase
@@ -333,5 +349,6 @@ module.exports = {
     getUserFeed,
     getUserSubs,
     createUserSub,
+    fetchIconUrl,
     deleteSub,
 };

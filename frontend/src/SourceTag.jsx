@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 
-function SourceTag({ subscription, onDelete }) {
+function SourceTag({ source, onDelete }) {
     return (
         <div
             style={{
@@ -16,7 +16,7 @@ function SourceTag({ subscription, onDelete }) {
             }}
         >
             <p
-                onClick={() => onDelete(subscription.ids)}
+                onClick={() => onDelete(source.ids)}
                 style={{ 
                     padding: '0.5rem', 
                     margin: '0 0 0 1rem', 
@@ -34,7 +34,7 @@ function SourceTag({ subscription, onDelete }) {
                     color: 'rgba(121, 121, 121, 1)'
                 }}
             >
-                {subscription.author}
+                {source.author}
             </p>
         </div>
     )
