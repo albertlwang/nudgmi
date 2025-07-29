@@ -14,6 +14,7 @@ function App() {
   const [posts, setPosts] = useState([]);
   const [subs, setSubs] = useState([]);
   const [sources, setSources] = useState([]);
+  const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch user ID once on load
@@ -72,7 +73,7 @@ function App() {
       } catch (err) {
         console.error('Error fetching subscriptions:', err);
       }
-  }
+  };
 
   const fetchSources = async () => {
     try {
@@ -84,7 +85,19 @@ function App() {
     } catch (err) {
       console.error('Error fetching sources:', err);
     }
-  }
+  };
+
+  const fetchTopics = async () => {
+    try {
+      const res = await axios.get('http://localhost:3000/api/topics', {
+        params: { user_id: userId }
+      });
+
+      setTopics(res.data.topics);
+    } catch (err) {
+      console.error('Error fetching topics:', err);
+    }
+  };
 
   // Fetch posts and subs once we have userId
   useEffect( () => {
@@ -97,6 +110,7 @@ function App() {
       await fetchPosts();
       await fetchSubs();
       await fetchSources();
+      await fetchTopics();
     }
 
     run();
@@ -156,12 +170,8 @@ function App() {
             {posts.map(post => (
               <li key={post.link} style={{ listStyle: 'none' }}>
                 <PostCard
-                  title={post.title}
-                  summary={post.summary}
-                  link={post.link}
-                  published_at={post.published_at}
-                  topics={post.topics}
-                  icon_url={post.icon_url}
+                  post={post}
+                  topics={topics}
                 />
               </li>
             ))}

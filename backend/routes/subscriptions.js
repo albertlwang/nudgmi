@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { getUserSubs, createUserSub, fetchIconUrl, deleteSub, getIconUrl } = require('../db/db');
+const { getUserSubs, createUserSub, fetchIconUrl, deleteSub, getIconUrl, getUserTopics } = require('../db/db');
 const { getChannelUri } = require('../services/youtube');
 
 // GET /api/subscriptions?user_id=xyz
@@ -50,7 +50,7 @@ router.get('/sources', async (req, res) => {
         // Enrich with metadata, Promise.all to handle multiple async functions in parallel
         const sources = await Promise.all(
             Object.values(grouped)
-            .sort((a, b) => a.author.localeCompare(b.author)) // Sort alphabetically by author
+            .sort((a, b) => a.author.toLowerCase().localeCompare(b.author.toLowerCase())) // Sort alphabetically by author, case insensitive
             .map(async (group) => {
                 // Get extra metadata
                 const channel_uri = await getChannelUri(group.source);
@@ -72,6 +72,24 @@ router.get('/sources', async (req, res) => {
     } catch (err) {
         console.error('[subscriptions] Unexpected error: ', err.message);
         return res.status(500).json({ error: 'Failed to fetch sources,' });
+    }
+})
+
+// GET /api/topics?user_id=xyz
+// Returns all distinct topics a given user is subscribed to, along with metadata for each topic
+// Sort in alphabetical order by topic
+router.get('/topics', async (req, res) => {
+    const { user_id } = req.query;
+    if (!user_id) {
+        return res.status(400).json({ error: 'user_id is required.' });
+    }
+
+    try {
+        const topics = await getUserTopics(user_id);
+        return res.status(200).json({ topics });
+    } catch (err) {
+        console.error('[subscriptions] Unexpected error: ', err.message);
+        return res.status(500).json({ error: 'Failed to fetch topics.' });
     }
 })
 

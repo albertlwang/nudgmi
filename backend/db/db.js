@@ -266,6 +266,40 @@ async function createUserSub(user_id, source, topic) {
         throw error;
     }
 
+    await createUserTopic(user_id, topic); // TODO: add color passing
+
+    return data;
+}
+
+// Add a new entry to the topics table
+// Assume that (user_id, topic) is unique (enforced by front-end)
+async function createUserTopic(user_id, topic, color = 'LIGHT_BLUE') {
+    const { error } = await supabase
+        .from('topics')
+        .upsert(
+            [{ user_id, topic, color }],
+            { onConflict: ['user_id', 'topic'] }
+        );
+
+    if (error) {
+        console.error('[db -> createUserTopic] Error upserting topic:', error.message);
+        throw error;
+    }
+}
+
+// Fetches all topics for a given user
+// Returns in alphabetical order by topic name
+async function getUserTopics(user_id) {
+    const { data, error } = await supabase
+        .from('topics')
+        .select('*')
+        .eq('user_id', user_id)
+        .order('topic', { ascending: true });
+
+    if (error) {
+        console.error('[db -> getUserTopics] Error fetching topics:', error.message);
+        throw error;
+    }
     return data;
 }
 
@@ -349,6 +383,7 @@ module.exports = {
     getUserFeed,
     getUserSubs,
     createUserSub,
+    getUserTopics,
     fetchIconUrl,
     deleteSub,
 };
