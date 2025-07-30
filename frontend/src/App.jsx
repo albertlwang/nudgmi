@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Gauge, SatelliteDish } from 'lucide-react';
 import axios from 'axios';
 
 import PostCard from './PostCard';
@@ -163,6 +164,8 @@ function App() {
   };
 
   const sidebarBtnStyle = (active) => ({
+    display: 'flex',
+    alignItems: 'center',
     padding: '1rem',
     backgroundColor: active ? '#F1F1F1' : 'transparent',
     border: 'none',
@@ -170,7 +173,7 @@ function App() {
     color: '#363636',
     textAlign: 'left',
     cursor: 'pointer',
-    fontWeight: active ? 'bold' : 'normal',
+    fontWeight: 'bold',
     marginBottom: '0.5rem',
   });
 
@@ -180,9 +183,11 @@ function App() {
       <div className='sidebar'>
         <h2 className="header" style={{ marginBottom: '4rem', marginLeft: '1rem', textAlign: 'left', color: '#797979' }}>Nudgmi</h2>
         <button onClick={() => setActiveView('dashboard')} style={sidebarBtnStyle(activeView === 'dashboard')}>
+          <Gauge size={24} style={{ margin: '0 1rem 0.2rem 0.2rem' }}/>
           Dashboard
         </button>
         <button onClick={() => setActiveView('sourcesTab')} style={sidebarBtnStyle(activeView === 'sourcesTab')}>
+          <SatelliteDish size={24} style={{ margin: '0 1rem 0.2rem 0.2rem' }}/>
           Sources
         </button>
       </div>
