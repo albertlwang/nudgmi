@@ -1,4 +1,3 @@
-// src/App.jsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -6,9 +5,12 @@ import PostCard from './PostCard';
 import InputBox from './InputBox';
 import SourceTag from './SourceTag';
 import './App.css';
+import Dashboard from './Dashboard';
+import SourcesTab from './SourcesTab';
 
 
 function App() {
+  const [activeView, setActiveView] = useState('dashboard'); // or 'subscriptions'
   const [email, setEmail] = useState('test@example.com'); // Mock email
   const [userId, setUserId] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -16,6 +18,7 @@ function App() {
   const [sources, setSources] = useState([]);
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
+  
 
   // Fetch user ID once on load
   useEffect(() => {
@@ -159,41 +162,51 @@ function App() {
     }
   };
 
+  const sidebarBtnStyle = (active) => ({
+    padding: '1rem',
+    backgroundColor: active ? '#F1F1F1' : 'transparent',
+    border: 'none',
+    borderRadius: '0.875rem',
+    color: '#363636',
+    textAlign: 'left',
+    cursor: 'pointer',
+    fontWeight: active ? 'bold' : 'normal',
+    marginBottom: '0.5rem',
+  });
+
   return (
-    <div style={{ padding: '0.5rem', fontFamily: 'inter', backgroundColor: '#F7F7F7', display: 'flex', flexDirection: 'row' }}>
-      <div style={{ width: '70%' }}>
-        <h1 className='header'>Nudgmi Proto Dashboard</h1>
-        <p>Logged in as: <strong>{email}</strong></p>
-
-        {loading ? (<p>Loading posts...</p>) : (
-          <ul style={{ paddingInlineStart: '0px' }}>
-            {posts.map(post => (
-              <li key={post.link} style={{ listStyle: 'none' }}>
-                <PostCard
-                  post={post}
-                  topics={topics}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', fontFamily: 'inter' }}>
+      {/* Sidebar */}
+      <div className='sidebar'>
+        <h2 className="header" style={{ marginBottom: '4rem', marginLeft: '1rem', textAlign: 'left', color: '#797979' }}>Nudgmi</h2>
+        <button onClick={() => setActiveView('dashboard')} style={sidebarBtnStyle(activeView === 'dashboard')}>
+          Dashboard
+        </button>
+        <button onClick={() => setActiveView('sourcesTab')} style={sidebarBtnStyle(activeView === 'sourcesTab')}>
+          Sources
+        </button>
       </div>
-      <div style={{ width: '30%' }}>
-        <div className='card' style={{ width: '90%', padding: '1rem'}}>
-          <h3 className='header'>Subscriptions</h3>
-          <InputBox onSubmit={handleSubmit} validate={validateInput}></InputBox>
-          <ul style={{ paddingInlineStart: '0px' }}>
-            {sources.map(source => (
-              <li key={source.source} style={{ listStyle: 'none' }}>
-                  <SourceTag
-                    source={source}
-                    onDelete={deleteSubs}
-                  />
-                </li>
-            ))}
-          </ul>
-        </div>
 
+      {/* Scrollable Content */}
+      <div className='scrollable'>
+        {activeView === 'dashboard' && (
+          <Dashboard
+            email={email}
+            posts={posts}
+            topics={topics}
+            loading={loading}
+            fetchPosts={fetchPosts}
+          />
+        )}
+        {activeView === 'sourcesTab' && (
+          <SourcesTab
+            sources={sources}
+            topics={topics}
+            onDelete={deleteSubs}
+            onSubmit={handleSubmit}
+            validate={validateInput}
+          />
+        )}
       </div>
     </div>
   );

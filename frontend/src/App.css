@@ -1,5 +1,21 @@
 /* Global Styling */
 
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* lock global scroll */
+}
+
+.scrollable {
+    flex-grow: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* not working */
+    height: 100vh;
+    padding: 1rem;
+    background-color: #F7F7F7;
+}
+
 .profile-icon {
     width: 64px;
     height: 64px;
@@ -9,6 +25,12 @@
 }
 
 .header {
+    font-weight: medium;
+    font-size: 1.5rem;
+    color: #363636;
+}
+
+.title {
     font-weight: 500;
     font-size: 1.15rem;
     letter-spacing: 0.33px;
@@ -38,4 +60,19 @@
     background-color: white;
     border-radius: 0.875rem;
     box-shadow: 1px 4px 36px -9px rgba(0, 0, 0, 0.1);
+}
+
+.view {
+    width: 100%;
+    margin: 1.5rem 0 0 1.5rem;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: white;
+    color: #797979;
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
 }

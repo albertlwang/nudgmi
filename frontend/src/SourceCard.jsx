@@ -2,41 +2,51 @@ import React, { useState, useRef, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import TopicTag from './TopicTag';
 
-function PostCard({ post, topics }) {
+function SourceCard({ source, topics }) {
     return (
         <div
             className='card'
             style={{
                 display: 'flex',
-                flexDirection: 'row',
-                marginBottom: '2rem',
-                maxWidth: '95%'
+                flexDirection: 'column',
+                marginBottom: '1.5rem',
+                marginRight: '1rem',
+                padding: '1.5rem 2rem 0.5rem 2.5rem',
+                width: '25rem'
             }}
         >
-            <img
-                className='profile-icon'
-                src={post.icon_url}
-                style={{ marginLeft: '0.75rem', marginRight: '1.5rem', marginTop: '1rem' }}
-            />
+            <a
+                href={source.channel_uri}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()}
+                style={{ width: 'fit-content' }}
+                >
+                <img
+                    className="profile-icon"
+                    src={source.icon_url}
+                    alt="Channel icon"
+                    style={{ margin: '0', cursor: 'pointer' }}
+                />
+            </a>
             <div>
-                <p className='title link' style={{ marginBottom: '0.2rem', marginRight: '3rem' }}>
+                <p className='title link' style={{ margin: '0.875rem 3rem 0.5rem 0', width: 'fit-content'}}>
                     <a
-                        href={post.link}
+                        href={source.channel_uri}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={e => e.stopPropagation()}
                         style={{ textDecoration: 'none', color: 'inherit' }}
                     >
-                        {post.title}
+                        {source.author}
                     </a>
                     </p>
-                <p style={{ fontSize: '0.75rem', margin: '0.5rem 0 1.5rem 0', color: '#797979' }}>Posted {formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}</p>
-                <p className='description' style={{ marginBottom: '1.5rem', marginRight: '3rem', maxWidth: '40rem' }}>{post.summary}</p>
+                <p style={{ fontSize: '0.75rem', margin: '0.5rem 0 1.5rem 0', color: '#797979' }}>Youtube Channel</p>
                 <div style={{ marginBottom: '1rem', fontSize: '0.875rem', color: '#797979', display: 'flex', flexDirection: 'row' }}>
                     {/* <strong>Topics:</strong> {post.topics?.length ? post.topics.join(', ') : 'None'} */}
-                    {post.topics?.length ? (
+                    {source.topics?.length ? (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.5rem' }}>
-                            {post.topics.map(topicName => {
+                            {source.topics.map(topicName => {
                             const match = topics.find(t => t.topic === topicName);
                             const color = match ? match.color : 'LIGHT_BLUE'; // fallback color
 
@@ -55,4 +65,4 @@ function PostCard({ post, topics }) {
     );
 }
 
-export default PostCard;
+export default SourceCard;
