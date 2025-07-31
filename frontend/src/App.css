@@ -59,12 +59,21 @@ html, body {
 .card {
     background-color: white;
     border-radius: 0.875rem;
-    box-shadow: 1px 4px 36px -9px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 4px 15px 3px rgba(0, 0, 0, 0.05);
+}
+
+.poppy {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.poppy:hover {
+  transform: scale(1.01);
+  box-shadow: 1px 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .view {
     width: 100%;
-    margin: 1.5rem 0 0 1.5rem;
+    margin: 4rem 0 0 1.5rem;
     padding-bottom: 5rem;
 }
 

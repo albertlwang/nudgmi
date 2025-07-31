@@ -11,8 +11,8 @@ function SourcesTab({ sources = [], topics, onDelete, onSubmit, validate }) {
 
   return (
     <div className="view">
-      <h1 className="header">My Sources</h1>
-      <InputBox onSubmit={onSubmit} validate={validate} />
+      <h1 className="header" style={{ marginBottom: '3rem' }}>My Sources</h1>
+      {/* <InputBox onSubmit={onSubmit} validate={validate} /> */}
       
       <div style={{
           display: 'flex',

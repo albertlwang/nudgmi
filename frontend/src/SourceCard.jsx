@@ -5,7 +5,7 @@ import TopicTag from './TopicTag';
 function SourceCard({ source, topics }) {
     return (
         <div
-            className='card'
+            className='card poppy'
             style={{
                 display: 'flex',
                 flexDirection: 'column',
