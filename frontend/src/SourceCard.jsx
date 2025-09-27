@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import TopicTag from './TopicTag';
 
-function SourceCard({ source, topics }) {
+function SourceCard({ source, topics, onClick }) {
     return (
         <div
             className='card poppy'
+            onClick={onClick}
             style={{
                 display: 'flex',
                 flexDirection: 'column',
