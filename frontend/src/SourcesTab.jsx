@@ -5,6 +5,7 @@ import SourceCard from "./SourceCard";
 import NewSourceCard from "./NewSourceCard";
 import Modal from "./Modal";
 import SourcePage from "./SourcePage";
+import AddSource  from "./AddSource";
 
 function SourcesTab({ sources = [], topics, onDelete, onSubmit, validate }) {
   const [ showModal, setShowModal ] = useState(false);
@@ -34,8 +35,7 @@ function SourcesTab({ sources = [], topics, onDelete, onSubmit, validate }) {
 
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
-          <h2 className="header">Add new source</h2>
-          <p>This is your popup content!</p>
+          <AddSource onSubmit={onSubmit} validate={validate}/>
         </Modal>
       )}
     </div>

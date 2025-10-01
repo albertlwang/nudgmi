@@ -144,9 +144,15 @@ function App() {
     }
   };
 
-  const validateInput = (input1, input2) => {
-    if (input1.trim() === '' || input2.trim() === '') return 'Input cannot be empty';
-    if (input1.length < 3 || input2.length < 3) return 'Input must be at least 3 characters';
+  // const validateInput = (input1, input2) => {
+  //   if (input1.trim() === '' || input2.trim() === '') return 'Input cannot be empty';
+  //   if (input1.length < 3 || input2.length < 3) return 'Input must be at least 3 characters';
+  //   return null; // valid
+  // };
+
+  const validateInput = (input) => {
+    if (input.trim() === '') return 'Input cannot be empty';
+    if (input.length < 3) return 'Input must be at least 3 characters';
     return null; // valid
   };
 

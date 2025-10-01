@@ -3,7 +3,7 @@ import { CircleFadingPlus } from 'lucide-react';
 function NewSourceCard({ onClick }) {
     return (
         <div
-            className='card'
+            className='card poppy'
             onClick={onClick}
             style={{
                 backgroundColor: '#EDEDED',
