@@ -73,7 +73,7 @@ html, body {
 
 .view {
     width: 100%;
-    margin: 4rem 0 0 1.5rem;
+    margin: 0 0 0 1.5rem;
     padding-bottom: 5rem;
 }
 
@@ -104,4 +104,11 @@ html, body {
 
 .content {
     background-color: #F7F7F7;
+}
+
+hr {
+    margin-right: 5rem;
+    height: 1px;
+    border: none;
+    background-color: #E4E4E4;
 }

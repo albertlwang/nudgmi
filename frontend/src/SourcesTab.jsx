@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import SourceTag from "./SourceTag";
 import InputBox from "./InputBox";
 import SourceCard from "./SourceCard";
@@ -10,9 +10,12 @@ import AddSource  from "./AddSource";
 function SourcesTab({ sources = [], topics, onDelete, onSubmit, validate }) {
   const [ showModal, setShowModal ] = useState(false);
   const [ showSource, setShowSource ] = useState(false);
-  const [ currSource, setCurrSource ] = useState(null);
-  const [ currTopics, setCurrTopics ] = useState([]);
+  const [ selectedSource, setSelectedSource ] = useState(null);
 
+  const currSource = useMemo(
+    () => sources.find(s => s.source === selectedSource) ?? null, // use your real unique field
+    [sources, selectedSource]
+  );
 
   return !showSource ? (
     <div className="view">
@@ -27,7 +30,7 @@ function SourcesTab({ sources = [], topics, onDelete, onSubmit, validate }) {
         }}>
         {sources.map(source => (
           <div key={source.source} style={{ flex: '0 1 calc(33.333% - 1rem)', boxSizing: 'border-box' }}>
-            <SourceCard source={source} topics={topics} onClick={() => { setShowSource(true); setCurrSource(source); setCurrTopics(topics); }} />
+            <SourceCard source={source} topics={topics} onClick={() => { setShowSource(true); setSelectedSource(source.source); }} />
           </div>
         ))}
         <NewSourceCard onClick={() => setShowModal(true)}/>
@@ -44,7 +47,7 @@ function SourcesTab({ sources = [], topics, onDelete, onSubmit, validate }) {
   (
     <div className="view">
       <div>
-        <SourcePage source={currSource} topics={currTopics} onClose={() => setShowSource(false)}/>
+        <SourcePage source={currSource} topics={topics} onDelete={onDelete} onClose={() => setShowSource(false)}/>
       </div>
 
     </div>

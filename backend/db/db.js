@@ -266,7 +266,18 @@ async function createUserSub(user_id, source, topic) {
         throw error;
     }
 
-    await createUserTopic(user_id, topic); // TODO: add color passing
+    // Check if topic already exists in topics table
+    // If not, update topics table
+    const { data: existingSource, _ } = await supabase
+        .from('topics')
+        .select('topic')
+        .eq('topic', topic)
+        .limit(1)
+        .single();
+
+    if (!existingSource) {
+        await createUserTopic(user_id, topic); // TODO: add color passing
+    }
 
     return data;
 }

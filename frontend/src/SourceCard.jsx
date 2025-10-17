@@ -44,7 +44,6 @@ function SourceCard({ source, topics, onClick }) {
                     </p>
                 <p style={{ fontSize: '0.75rem', margin: '0.5rem 0 1.5rem 0', color: '#797979' }}>Youtube Channel</p>
                 <div style={{ marginBottom: '1rem', fontSize: '0.875rem', color: '#797979', display: 'flex', flexDirection: 'row' }}>
-                    {/* <strong>Topics:</strong> {post.topics?.length ? post.topics.join(', ') : 'None'} */}
                     {source.topics?.length ? (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.5rem' }}>
                             {source.topics.map(topicName => {

@@ -135,6 +135,9 @@ function App() {
       const res = await axios.post('http://localhost:3000/api/subscribe', { user_id: userId, source, topic });
       console.log('Subscription created:', res.data.subscription);
       await fetchSubs();
+      await fetchTopics();
+      await fetchSources();
+      await fetchPosts();
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
         throw new Error(err.response.data.error); // e.g. "Duplicate subscription"
@@ -158,11 +161,14 @@ function App() {
 
   const deleteSubs = async (subscription_ids) => {
     try {
-      for (const id of subscription_ids) {
-        await axios.delete(`http://localhost:3000/api/subscriptions/${id}`);
-        console.log(`Deleted subscription ${id}`);
-      }
-      await fetchSubs();
+      // Delete in parallel
+      await Promise.all(subscription_ids.map(id =>
+        axios.delete(`http://localhost:3000/api/subscriptions/${id}`)
+      ));
+      console.log(`Deleted subscriptions: ${subscription_ids}`);
+
+      // Single refresh pass
+      await Promise.all([fetchSubs(), fetchTopics(), fetchSources(), fetchPosts()]);
     } catch (err) {
       console.error(`Error deleting subscriptions ${subscription_ids}:`, err.message);
       throw err; // rethrow if you want the caller to handle it

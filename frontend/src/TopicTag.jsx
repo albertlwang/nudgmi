@@ -1,13 +1,25 @@
 import { useEffect, useState } from "react";
 import { TAG_COLORS } from "./ColorMap";
 
-function onDelete() {
-    return;
-}
 
-function TopicTag({ topic, color, editing = false }) {
+function TopicTag({ topic, subID, color, editing = false, onDelete = () => {}, disabled }) {
     const baseColor = TAG_COLORS[color] || 'rgb(0, 141, 242)';
     const backgroundColor = `rgba(${baseColor.replace('rgb(', '').replace(')', '')}, 0.1)`; // 10% opacity
+
+    const handleDelete = async () => {
+        console.log("disabled?: ", disabled);
+        if (disabled) {
+            console.log("Must have at least one topic per source. Unsubscribe from source to remove all topics.");
+            alert("Must have at least one topic per source. Unsubscribe from source to remove all topics.");
+            return;
+        }
+        try {
+            await onDelete([subID]);
+        }
+        catch (err) {
+            console.log(err.message || "Failed to delete topic.");
+        }
+    };
 
     return (
         <div
@@ -27,7 +39,7 @@ function TopicTag({ topic, color, editing = false }) {
             }}
         >
             <p
-                onClick={() => onDelete()}
+                onClick={() => handleDelete()}
                 style={{ 
                     padding: '0 0 0 0', 
                     margin: '0 0 0 0', 
