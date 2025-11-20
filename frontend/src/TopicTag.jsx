@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { TAG_COLORS } from "./ColorMap";
 
 

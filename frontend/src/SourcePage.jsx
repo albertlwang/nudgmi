@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import TopicTag from './TopicTag';
 
 
@@ -13,7 +12,17 @@ function SourcePage({ source, topics, onDelete, onClose }) {
     fontSize: '2.5rem',
     cursor: 'pointer',
     marginBottom: '2rem'
-    };  
+    };
+
+    const removeSource = async () => {
+        // Close page first to avoid white-screening
+        onClose();
+        try {
+            await onDelete(source.ids);
+        } catch (err) {
+            console.log(err.message || "Failed to remove source.")
+        }
+    };
     
     return (
         <div>
@@ -77,6 +86,7 @@ function SourcePage({ source, topics, onDelete, onClose }) {
             <h3 className="title">Statistics</h3>
             <hr></hr>
             <h3 className="title">Manage Source</h3>
+            <button onClick={removeSource} >Remove Source</button>
         </div>
     )
 }
