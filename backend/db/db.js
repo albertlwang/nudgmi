@@ -3,7 +3,7 @@
 
 // Initialize client
 const supabase = require('../supabaseClient');
-const { fetchIcon } = require('../services/youtube');
+const { fetchIcon, getChannelIdFromHandle } = require('../services/youtube');
 const { fetchRSSAuthor } = require('../services/rssService');
 const axios = require('axios');
 const mime = require('mime-types');
@@ -233,6 +233,20 @@ async function getUserSubs(user_id) {
 // Create new source entry on new source (cache icon in profile-icons bucket)
 // Returns the new subscription entry
 async function createUserSub(user_id, source, topic) {
+    // Convert channel link to RSS link, if necessary.
+    const oldPrefix = "https://www.youtube.com/channel/";
+    const newPrefix = "https://www.youtube.com/@";
+    const rssPrefix = "https://www.youtube.com/feeds/videos.xml?channel_id="
+
+    if (source.startsWith(newPrefix)) {
+        const handle = "@" + source.slice(newPrefix.length);
+        const channelID = await getChannelIdFromHandle(handle);
+        source = rssPrefix + channelID;
+    }
+    else if (source.startsWith(oldPrefix)) {
+        source = rssPrefix + source.slice(oldPrefix.length);
+    }
+
     // First check if source exists in sources table. If not, fetch icon_url and insert
     if (!await sourceExists(source)) {
         const iconURL = await fetchIcon(source);
