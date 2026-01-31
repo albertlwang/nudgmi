@@ -43,9 +43,19 @@ function AddSource({ onSubmit, validate }) {
         }
     };
 
+    const buttonStyle = {
+        padding: '1rem 2rem 1rem 2rem',
+        border: '1px solid #374AD9',
+        borderRadius: '10px',
+        backgroundColor: '#374ad921',
+        color: '#374AD9',
+        fontWeight: '600',
+        cursor: 'pointer'
+    };
+
     return (
         <div>
-            <h2 className="header">Add new source</h2>
+            <h2 style={{ marginBottom: '5%' }} className="header">Add new source</h2>
             <p>Youtube Channel Link / RSS Feed Link</p>
             <input 
                 type="text" 
@@ -54,14 +64,14 @@ function AddSource({ onSubmit, validate }) {
                 className="input-field"
                 placeholder="Enter feed link"
             />
-            <p>Paste either:</p>
-            <ul>
+            <p className="description">Paste either:</p>
+            <ul className="description">
                 <li>the URL of a Youtube channel homepage.</li>
                 <li>the URL of an RSS feed.</li>
             </ul>
             <hr></hr>
             <h3>Add a topic</h3>
-            <p>
+            <p className="description">
                 Filter the content you receive from this source with topics. 
                 Only posts relevant to your topics will show up in your Nudgmi feed.
             </p>
@@ -87,8 +97,9 @@ function AddSource({ onSubmit, validate }) {
                     <li key={index}>{topic}</li>
                 ))}
             </ul> */}
+            <hr style={{ marginBottom: '2rem' }}></hr>
 
-            <button onClick={handleSubmit}>Add source</button>
+            <button style={buttonStyle} onClick={handleSubmit}>+ Add source</button>
         </div>
     )
 }

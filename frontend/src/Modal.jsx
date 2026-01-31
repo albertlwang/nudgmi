@@ -14,12 +14,10 @@ const overlayStyle = {
 
 const modalStyle = {
   backgroundColor: 'white',
-  padding: '2rem',
+  padding: '2rem 3rem 4rem 3rem',
   borderRadius: '12px',
   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
   position: 'relative',
-  width: '80vw',
-  height: '80%'
 };
 
 const closeBtnStyle = {
